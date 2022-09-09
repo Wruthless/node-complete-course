@@ -4,6 +4,9 @@ const bodyParser = require('body-parser')
 
 const app = express();
 
+app.set('view engine', 'pug');
+app.set('views', 'views');
+
 // Chagned to adminData after chaing route exports in
 // 'admin.js'.
 const adminData = require('./routes/admin');
@@ -25,7 +28,8 @@ app.use(shopRoutes);
 
 // 404
 app.use((req,res,next) => {
-    res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
+    //res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
+    res.status(404).render('404', {pageTitle: 'Page Not Found'});
 });
 
 app.listen(3000);

@@ -12,9 +12,15 @@ router.get('/', (req, res, next) => {
     // (routes) works on all operating systems.
 
     // Changed to using rootDir in the util directory.
-    res.sendFile(path.join(rootDir, 'views', 'shop.html'));
+    // res.sendFile(path.join(rootDir, 'views', 'shop.html'));
+    // console.log('shop.js', adminData.products);
 
-    console.log('shop.js', adminData.products);
+    const products = adminData.products;
+    res.render('shop', {
+        prods: products,
+        pageTitle: 'Shop',
+        path: '/'
+    });
 });
 
 module.exports = router;
