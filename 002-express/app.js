@@ -2,22 +2,12 @@ const path = require('path');
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const expressHbs = require('express-handlebars');
 
 const app = express();
 
-// 'hbs' sets the file extension you can use on the templates.
-app.engine(
-  'hbs',
-  expressHbs.engine({
-    extname: 'hbs',
-    layoutDir: '/views/layouts',
-    defaultLayout: 'main-layout'
-}));
 
-app.set('view engine', 'hbs');
+app.set('view engine', 'ejs');
 app.set('views', 'views');
-//app.set('view engine', 'pug');
 
 // Chagned to adminData after chaing route exports in
 // 'admin.js'.
@@ -40,10 +30,8 @@ app.use(shopRoutes);
 
 // 404
 app.use((req,res,next) => {
-    //res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
-    res.status(404).render('404', { // '404' the body or content for the page
-        pageTitle: 'Page Not Found',
-        layout: 'main-layout'       // The template/layout you are using in /views/layouts
-    });
+    // Since we are using path in the ejs files, and 404 has not path, you
+    // must define `path: 'Error'` in the object.
+    res.status(404).render('404', {pageTitle: "Page Not Found", path: 'Error'});
 });
 app.listen(3000);
