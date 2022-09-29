@@ -14,14 +14,14 @@ app.set('views', 'views');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
-// can use `then` since we are using promises for the db pool.
 // db.execute('SELECT * FROM products')
 //     .then(result => {
-//         console.log(result[0], result[1]);
+//         console.log(result);
 //     })
 //     .catch(err => {
 //         console.log(err);
 //     });
+
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
