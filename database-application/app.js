@@ -8,6 +8,9 @@ const sequelize = require('./util/database');
 const Product = require('./models/product');
 const User = require('./models/user');
 
+const Cart = require('./models/cart');
+const CartItem = require('./models/cart-item');
+
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -40,9 +43,14 @@ app.use(errorController.get404);
 Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
 User.hasMany(Product);
 
+User.hasOne(Cart);
+Cart.belongsTo(User);
+Cart.belongsToMany(Product, {through: CartItem});
+Product.belongsToMany(Cart, {through: CartItem});
+
 sequelize
 // setting force to true causes tables to be overwritten
-//.sync({force: true})
+    //.sync({force: true})
     .sync()
     .then(result => {
         return User.findAll({
@@ -52,13 +60,15 @@ sequelize
         })
     })
     .then(user => {
-        if (!user) {
+        if (!user[0]) {
             User.create({name: "Max", email: "test@test.com"});
         }
-        return user;
+        return user[0];
     })
     .then(user => {
-        // console.log(user);
+        return user.createCart();
+    })
+    .then(cart => {
         app.listen(3000);
     })
     .catch(err => {
