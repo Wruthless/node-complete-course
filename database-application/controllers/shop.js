@@ -133,9 +133,11 @@ exports.postCartDeleteProduct = (req, res, next) => {
 }
 
 exports.postOrder = (req,res,next) => {
+    let fetchedCart;
     req.user[0]
         .getCart()
         .then(cart => {
+            fetchedCart = cart;
             return cart.getProducts();
         })
         .then(products => {
@@ -153,21 +155,26 @@ exports.postOrder = (req,res,next) => {
         })
         // start here //
         .then(result => {
+            return fetchedCart.setProducts(null);
+        })
+        .then(result => {
             res.redirect('/orders');
         })
         .catch(err => console.log(err));
 };
 
 exports.getOrders = (req, res, next) => {
-  res.render('shop/orders', {
-    path: '/orders',
-    pageTitle: 'Your Orders'
-  });
-};
-
-exports.getCheckout = (req, res, next) => {
-  res.render('shop/checkout', {
-    path: '/checkout',
-    pageTitle: 'Checkout'
-  });
+    // In app.js you are associating an order to many 'Product'
+    // The model also contains the word 'product.' Sequelie pluralizes this
+    // to use a concept called 'eager loading.' Which means you are fetching
+    // multiple tables at one time -- orders and products.
+    req.user[0].getOrders({ include: ['products']})
+    .then(orders => {
+        res.render('shop/orders', {
+            path: '/orders',
+            pageTitle: 'Your Orders',
+            orders: orders
+        })
+    })
+.catch(err => console.log(err))
 };
