@@ -4,6 +4,8 @@ const MongoClient = mongodb.MongoClient;
 let _db;
 
 const mongoConnect = (callback) => {
+    // Notice "shop" before the query string, this defines what the database name
+    // will be in Mongo.
     MongoClient.connect('mongodb+srv://brandon:terminal@cluster0.btl9b9w.mongodb.net/shop?retryWrites=true&w=majority'
     )
     .then(client => {
