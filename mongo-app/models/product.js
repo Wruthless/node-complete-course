@@ -9,7 +9,8 @@ class Product {
         this.price = price;
         this.description = description;
         this.imageUrl = imageUrl;
-        this._id = id;
+        // ternary operation to see if this exist needed for `save()`.
+        this._id = id ? new mongodb.ObjectId(id) : null;
     }
 
     save() {
@@ -25,7 +26,8 @@ class Product {
                     //      this.title = title
                     //      this.price = price
                     //      ...
-                    _id: new mongodb.ObjectId(this._id)}, {$set: this});
+                    _id: this._id}, { $set: this });
+                    // _id: new mongodb.ObjectId(this._id)}, {$set: this});
         } else {
             dbOp = db
                 .collection('products')
@@ -65,6 +67,17 @@ class Product {
             .then(product => {
                 console.log(product);
                 return product
+            })
+            .catch(err => console.log(err))
+    }
+
+    static deleteById(prodId) {
+        const db = getDb();
+        return db
+            .collection('products')
+            .deleteOne({_id: new mongodb.ObjectId(prodId)})
+            .then(result => {
+                console.log("Deleted");
             })
             .catch(err => console.log(err))
     }
