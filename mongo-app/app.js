@@ -19,9 +19,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
-  User.findById('634a8131f2f5b6f5876386c3')
-    .then(user => {
-      req.user = user;
+    User.findById('634a8131f2f5b6f5876386c3')
+        .then(user => {
+        // getting a user by creating a new User() allows you to get 
+        // access to all the fields associated with the user.
+        // It stored the user object in the request.
+        req.user = new User(user.name, user.email, user.cart, user._id);
       next();
     })
     .catch(err => console.log(err));

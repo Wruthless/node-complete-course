@@ -70,36 +70,58 @@ exports.getCart = (req, res, next) => {
 
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
-  let fetchedCart;
-  let newQuantity = 1;
-  req.user
-    .getCart()
-    .then(cart => {
-      fetchedCart = cart;
-      return cart.getProducts({ where: { id: prodId } });
-    })
-    .then(products => {
-      let product;
-      if (products.length > 0) {
-        product = products[0];
-      }
-
-      if (product) {
-        const oldQuantity = product.cartItem.quantity;
-        newQuantity = oldQuantity + 1;
-        return product;
-      }
-      return Product.findById(prodId);
-    })
+  Product.findById(prodId)
     .then(product => {
-      return fetchedCart.addProduct(product, {
-        through: { quantity: newQuantity }
-      });
+        // In the user model `addToCart()` expects a product. 
+        // `addToCart()` calls the `updateOne()` method which returns a promise.
+        /*
+            .updateOne(
+            {
+                _id: new ObjectId(this._id) 
+            },
+            {
+                $set: { cart: updatedCart }
+            });
+        */
+       // Since the user model function returns a promise we can also return
+       // here, inside the controller.
+        return req.user.addToCart(product)
     })
-    .then(() => {
-      res.redirect('/cart');
-    })
-    .catch(err => console.log(err));
+    // get the result of the update operation.
+    .then(result => {
+        console.log(result);
+    });
+
+//   let fetchedCart;
+//   let newQuantity = 1;
+//   req.user
+//     .getCart()
+//     .then(cart => {
+//       fetchedCart = cart;
+//       return cart.getProducts({ where: { id: prodId } });
+//     })
+//     .then(products => {
+//       let product;
+//       if (products.length > 0) {
+//         product = products[0];
+//       }
+
+//       if (product) {
+//         const oldQuantity = product.cartItem.quantity;
+//         newQuantity = oldQuantity + 1;
+//         return product;
+//       }
+//       return Product.findById(prodId);
+//     })
+//     .then(product => {
+//       return fetchedCart.addProduct(product, {
+//         through: { quantity: newQuantity }
+//       });
+//     })
+//     .then(() => {
+//       res.redirect('/cart');
+//     })
+//     .catch(err => console.log(err));
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
