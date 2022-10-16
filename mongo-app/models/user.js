@@ -63,6 +63,38 @@ class User {
         );
     }
 
+    getCart() {
+        const db = getDb();
+        // get all the products in the cart utilizing the special mongo
+        // query syntax. Find all products where _id is equal to $in.
+        // It takes an array of ids and every id in the array will be accepted
+        // which will get a cursor which holds references to all products with 
+        // the id mentioned in the array.
+
+        // map an array of items if just product ids.
+        const productIds = this.cart.items.map(i => {
+            return i.productId;
+        });
+
+        return db
+            .collection('products')
+            .find({
+            // get a cursor with all matching products.
+            _id: { $in: productIds }
+        })
+        .toArray()
+        .then(products => {
+            // adding a quantity attribute on the cart which we get from the
+            // the existing products.
+            return products.map(p => {
+                return {...p, quantity: this.cart.items.find(i => {
+                    return i.productId.toString() === p._id.toString();
+                    }).quantity
+                };
+            });
+        });
+    }
+
     static findById(userId) {
         const db = getDb();
         return db.collection('users').findOne({

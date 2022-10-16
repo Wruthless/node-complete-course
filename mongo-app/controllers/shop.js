@@ -53,20 +53,16 @@ exports.getIndex = (req, res, next) => {
 exports.getCart = (req, res, next) => {
   req.user
     .getCart()
-    .then(cart => {
-      return cart
-        .getProducts()
-        .then(products => {
+    .then(products => {
           res.render('shop/cart', {
-            path: '/cart',
-            pageTitle: 'Your Cart',
-            products: products
-          });
-        })
-        .catch(err => console.log(err));
+                path: '/cart',
+                pageTitle: 'Your Cart',
+                products: products
+            });
     })
     .catch(err => console.log(err));
 };
+
 
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
@@ -85,11 +81,11 @@ exports.postCart = (req, res, next) => {
         */
        // Since the user model function returns a promise we can also return
        // here, inside the controller.
-        return req.user.addToCart(product)
+        req.user.addToCart(product)
     })
     // get the result of the update operation.
     .then(result => {
-        console.log(result);
+        res.redirect('/cart');
     });
 
 //   let fetchedCart;
