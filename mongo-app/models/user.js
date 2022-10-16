@@ -23,7 +23,13 @@ class User {
         // const cartProduct = this.cart.items.findIndex(cp => {
         //     return cp._id === product._id;
         // });
-        const updatedCart = { items: [{ ...product, quantity: 1 }] };
+        /*
+            The following will store all product data, which we do not want.
+            Notice the spread syntax is being used on product -- ...product
+
+            const updatedCart = { items: [{ ...product, quantity: 1 }] }; 
+        */
+        const updatedCart = { items: [{ productId: new ObjectId(product._id), quantity: 1 }] };
         const db = getDb();
 
         return db.collection('users').updateOne(
