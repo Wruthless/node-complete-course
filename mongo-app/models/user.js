@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { CP1250 } = require('mysql2/lib/constants/charsets');
 
 const Schema = mongoose.Schema;
 
@@ -19,6 +20,37 @@ const userSchema = new Schema({
         }]
     }
 });
+
+// Do not use arrow function here as we will need to reference `this`.
+// These are methods on the userScheme object defined above, to reference
+// any of its fields, use `this`.
+userSchema.methods.addToCart = function(product) {
+    // Get product index
+    const cartProductIndex = this.cart.items.findIndex(cp => {
+        return cp.productId.toString() === product._id.toString();
+    });
+
+    let newQuantity = 1;
+    const updatedCartItems = [...this.cart.items];
+
+    if (cartProductIndex >= 0) {
+        newQuantity = this.cart.items[cartProductIndex].quantity + 1;
+        updatedCartItems[cartProductIndex].quantity = newQuantity;
+    } else {
+        updatedCartItems.push({
+            productId: product._id,
+            quantity: newQuantity
+        });
+    }
+
+    const updatedCart = {
+        items: updatedCartItems
+    };
+
+    this.cart = updatedCart;
+    return this.save();
+
+}
 
 module.exports = mongoose.model('User', userSchema);
 
