@@ -80,7 +80,15 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
     Product.find()
+    // select is basically a filter for find. The below retrieves
+    // only the title, price, and it excludes the id (-_id).
+    //.select('title price -_id')
+
+    // getting the full user object inside of product
+    .populate('userId')
     .then(products => {
+        // clg the full user object inside of product
+        console.log(products);
         res.render('admin/products', {
             prods: products,
             pageTitle: 'Admin Products',
