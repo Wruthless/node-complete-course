@@ -3,6 +3,7 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const session = require('express-session');
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
@@ -16,8 +17,14 @@ const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 
+// Register middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+    secret: 'my secret',
+    resave: false,
+    saveUninitialized: false
+}))
 
 app.use((req, res, next) => {
   User.findById('634ed803fd9cf3ceaede3801')
@@ -48,7 +55,7 @@ mongoose
                 user.save();
             }
         });
-        app.listen(3000);
+        app.listen(3001);
     })
     .catch(err => {
         console.log(err);
